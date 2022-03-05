@@ -1,0 +1,9 @@
+.idea/
+.gradle/
+build/
+out/
+target/
+/key.json
+/src/acceptanceTests/kotlin/com/johnlewis/digimerch/categories/messages/
+/src/tmp
+reports/
