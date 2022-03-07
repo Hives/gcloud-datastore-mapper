@@ -2,7 +2,9 @@ package datastore_mapper
 
 import com.google.cloud.datastore.Datastore
 import com.google.cloud.datastore.Entity
+import com.google.cloud.datastore.ListValue
 import java.math.BigDecimal
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 
@@ -22,15 +24,31 @@ class EntityCreator<T : Any>(
             when (val value = property(valueObject)) {
                 null -> Unit
                 is String -> entity.set(name, value)
-                is Int -> entity.set(name, value.toLong())
-                is Long -> entity.set(name, value)
+                is Number -> {
+                    if (value is BigDecimal) entity.set(name, value.toPlainString())
+                    else entity.set(name, value.toLong())
+                }
                 is Boolean -> entity.set(name, value)
-                is BigDecimal -> entity.set(name, value.toPlainString())
-                else -> throw RuntimeException("Property '$name' of class '${valueObject::class.simpleName}' has unknown value type: ${property.returnType}")
+                is Collection<*> -> entity.set(name, value.toListValue())
+                else -> throw RuntimeException("unknown property type")
             }
         }
 
         return entity.build()
+    }
+
+    private fun Collection<*>.toListValue(): ListValue {
+        val listValue = ListValue.newBuilder()
+
+        forEach { value ->
+            when(value) {
+                is Int -> listValue.addValue(value.toLong())
+                is String -> listValue.addValue(value)
+                else -> throw RuntimeException("unknown list value type")
+            }
+        }
+
+        return listValue.build()
     }
 
     private fun T.nonKeyProperties() =

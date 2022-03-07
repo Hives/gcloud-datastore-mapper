@@ -29,6 +29,8 @@ class Test {
             val long: Long,
             val bigDecimal: BigDecimal,
             val boolean: Boolean,
+            val listOfInts: List<Int>,
+            val listOfStrings: List<String>,
         )
 
         val input = TestClass(
@@ -39,6 +41,8 @@ class Test {
             long = 123L,
             bigDecimal = BigDecimal(9.95),
             boolean = true,
+            listOfInts = listOf(1, 2, 3),
+            listOfStrings = listOf("one", "two", "three"),
         )
 
         val entityCreator = EntityCreator(
